@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<link rel="stylesheet" href="style.css">
+<script>
+function initialize(){
+    form = document.getElementById("diceSelection")
+    dicetable = document.getElementById("diceTable")
+    infoDisplay = document.getElementById("Infodisplay")
+}
+var firstTime = false
+var dice1 = [];
+var dice2 = [];
+var dice3 = [];
+var diceArrays = [dice1];
+var totalDice = [];
+var numberRolls;
+var numDice;
+function roll(){
+    if(firstTime == false){
+        firstTime = true
+        numDice = form.diceRoll.value
+    numberRolls = form.numRolls.value
+    if(numDice == 2){
+        diceArrays = [dice1, dice2]
+    }else if(numDice == 3){
+        diceArrays = [dice1, dice2, dice3]
+    }
+
+    for(let i = 0; i < diceArrays.length; i++){
+        var array = diceArrays[i]
+        oneDiceRolled(array, numberRolls)
+    }
+
+    for(let i = 0; i < diceArrays.length; i++){
+        console.log(diceArrays[i])
+    }
+
+   for(let i = 0; i < dice1.length; i++){
+        var totalRolled = 0
+        for(let j = 0; j < diceArrays.length; j++){
+            totalRolled += diceArrays[j][i]
+        }
+        totalDice.push(totalRolled)
+   }
+
+   console.log(totalDice)
+   
+
+   totalDice.sort()
+ 
+   var total = 0
+   var average = 0
+   for(let i = 0; i < totalDice.length; i++){
+    total += totalDice[i]
+   }
+   average = total/numberRolls
+   console.log("average" + (average))
+   var half = totalDice.length/2
+   var median
+   if(totalDice.length % 2 === 0){
+     median = (totalDice[half] + totalDice[half + 1] - 1)/2
+   }else{
+    var int = Math.ceil(half) - 1
+     median = totalDice[int]
+   }
+   console.log("median" + median)
+
+   const freq = {};
+
+for (const num of totalDice) {
+    freq[num] = freq[num] ? freq[num] + 1 : 1;
+}
+
+console.log(freq);
+
+mostfreq = 0
+freqNum = 0
+for (const num of totalDice) {
+    if(freq[num] > mostfreq){
+        mostfreq = freq[num]
+        freqNum = num
+    }
+}
+
+if(numDice == 1){
+    var mainRow = dicetable.insertRow();
+    var mainCell = mainRow.insertCell();
+    mainCell.innerHTML = "Dice" +1
+    var total = mainRow.insertCell();
+    total.innerHTML = "Total"
+}else if(numDice == 2){
+    var mainRow = dicetable.insertRow();
+    var mainCell = mainRow.insertCell();
+    mainCell.innerHTML = "Dice" +1
+    var mainCell2 = mainRow.insertCell();
+    mainCell2.innerHTML = "Dice" +2
+    var total = mainRow.insertCell();
+    total.innerHTML = "Total"
+}else if(numDice == 3){
+    var mainRow = dicetable.insertRow();
+    var mainCell = mainRow.insertCell();
+    mainCell.innerHTML = "Dice" +1
+    var mainCell2 = mainRow.insertCell();
+    mainCell2.innerHTML = "Dice" +2
+    var mainCell3 = mainRow.insertCell();
+    mainCell3.innerHTML = "Dice" + 3
+    var total = mainRow.insertCell();
+    total.innerHTML = "Total"
+}
+
+for(let i = 0; i < diceArrays[0].length; i++){
+        var newRoll = dicetable.insertRow();
+        var total = 0;
+        for(let j = 0; j< diceArrays.length; j++){
+            var newCell = newRoll.insertCell();
+            var roll = diceArrays[j][i]
+            total += roll
+            newCell.innerHTML = roll
+            if(j == diceArrays.length - 1){
+                cellTotal = newRoll.insertCell();
+                cellTotal.innerHTML = total
+            }
+        }
+}
+
+
+
+infoDisplay.innerHTML = "Median: " + median + " Mean: " + average + " Mode: " + freqNum + "<p></p>" + " Frequency of Numbers: "
+
+for (const num of totalDice) {
+  infoDisplay.innerHTML += num + ": " + freq[num] + ", "
+}
+
+var numSame = 0
+
+for(let i=0; i < dice1.length; i++){
+    if(numDice == 2){
+        if(dice1[i] == dice2[i]){
+            numSame += 1;
+        }
+    }else if(numDice == 3){
+        if(dice1[i] == dice2[i] && dice1[i] == dice3[i]){
+            console.log(dice1[i] + "." + dice2[i] + "." + dice3[i])
+            numSame += 1
+        }
+    }
+}
+
+if(numDice ==2){
+    infoDisplay.innerHTML += "<p></p> Number of Doubles: " + numSame
+}
+if(numDice ==3){
+    infoDisplay.innerHTML += "<p></p> Number of triples: " + numSame
+}
+
+}else{
+    alert("close and reopen window to roll again")
+}
+    
+}
+function oneDiceRolled(array, rollAmount){
+    for(let i = 1; i <= rollAmount; i++){
+        var rollVal = Math.floor(Math.random() * 6) + 1;
+        array.push(rollVal)
+    }
+}
+</script>
+<body onload="initialize()">
+    <form id = "diceSelection">
+        Number of Dices<br>
+       <input type = "radio" id="one" name="diceRoll" value="1">
+       <label for="one">1</label><br>
+       <input type = "radio" id="two" name="diceRoll" value="2">
+        <label for="two">2</label><br>
+        <input type = "radio" id="three" name="diceRoll" value="3">
+        <label for="three">3</label><br>
+        Number of Rolls <input type= "number" id="numRolls"><br>
+    </form>
+    <button onclick="roll();">Roll Dice</button>
+
+    <table id="diceTable">
+    </table>
+
+    <div id="Infodisplay">
+
+    </div>
+</body>
+</html>
